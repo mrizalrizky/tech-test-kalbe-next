@@ -2,22 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-
-// const fakeFetchProductById = async (id: string) => {
-//   // Simulate fetching product (replace with real API call)
-//   return {
-//     id,
-//     name: "Kalbe Vitamin C",
-//     price: 45000,
-//     image: "/vitamin.jpg",
-//   };
-// };
-
-// const fakeUpdateProduct = async (id: string, data: any) => {
-//   // Simulate update call
-//   console.log("Updating product:", id, data);
-//   return { success: true };
-// };
+import axios from "axios";
 
 export default function EditProductPage() {
   const { id } = useParams();
@@ -25,19 +10,25 @@ export default function EditProductPage() {
 
   const [product, setProduct] = useState({
     name: "",
+    description: "",
+    productCategoryId: "",
     price: 0,
-    image: "",
+    stockQty: 0,
+    imageUrl: "",
   });
 
-  const [loading, setLoading] = useState(false);
+  const fetchProductById = async (productId) => {
+    const response = await axios.get(
+      `http://localhost:5130/api/v1/products/${id}`
+    );
+    console.log("RESPONSE", response.data);
+    if (response.data.data) {
+      setProduct(response.data.data);
+    }
+  };
 
   useEffect(() => {
-    if (typeof id === "string") {
-      // fakeFetchProductById(id).then((data) => {
-      //   setProduct(data);
-      //   setLoading(false);
-      // });
-    }
+    fetchProductById(id);
   }, [id]);
 
   const handleChange = (e) => {
@@ -52,15 +43,11 @@ export default function EditProductPage() {
     e.preventDefault();
     if (typeof id === "string") {
       const res = true;
-      // const res = await fakeUpdateProduct(id, product);
       if (res.success) {
         router.push("/");
       }
     }
   };
-
-  if (loading)
-    return <p className="text-center py-10">Memuat data produk...</p>;
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-6 flex items-center justify-center">
