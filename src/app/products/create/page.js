@@ -7,11 +7,11 @@ import { fetchAllProductCategories } from "@/store/slice/productCategorySlice";
 import axios from "axios";
 
 export default function ProductCreatePage() {
-  const dispatch = useDispatch();
-  const { categories } = useSelector((state) => state.productCategories);
+  // const dispatch = useDispatch();
 
   const router = useRouter();
 
+  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [product, setProduct] = useState({
     name: "",
@@ -34,19 +34,32 @@ export default function ProductCreatePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await axios.post('http://localhost:5130/api/v1/products', {
-      ...product,
-      category: e.target[2].value, // Assuming the category is selected from the dropdown
+    const response = await axios.post("http://localhost:5130/api/v1/products", {
+      Name: product.name,
+      Description: product.description,
+      Price: product.price,
+      StockQty: product.stock_qty,
+      ImageUrl: product.image_link,
+      ProductCategoryId: selectedCategory,
     });
-    )
 
+    if (response.data.data) {
+      router.push("/");
+    }
   };
 
-  if (loading)
-    return <p className="text-center py-10">Memuat data produk...</p>;
+  const fetchAllProductCategories = async () => {
+    const response = await axios.get(
+      "http://localhost:5130/api/v1/product-categories"
+    );
+
+    if (response.data.data) {
+      setCategories(response.data.data);
+    }
+  };
 
   useEffect(() => {
-    dispatch(fetchAllProductCategories());
+    fetchAllProductCategories();
   }, []);
 
   return (
@@ -86,7 +99,11 @@ export default function ProductCreatePage() {
             <label className="block text-sm font-medium text-gray-700">
               Kategori Produk
             </label>
-            <select className="border border-gray-300 w-full p-2 rounded-xl" onChange={(e) => setSelectedCategory(e.target.value)} required>
+            <select
+              className="border border-gray-300 w-full p-2 rounded-xl"
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              required
+            >
               {categories?.map((category) => {
                 return <option value={category?.id}>{category?.name}</option>;
               })}

@@ -2,25 +2,34 @@
 
 import { userLogout } from "@/store/slice/authSlice";
 import { fetchAllProducts } from "@/store/slice/productSlice";
+import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ProductDashboardPage() {
   const router = useRouter();
-  const dispatch = useDispatch();
-  const { products } = useSelector((state) => state.products);
-  // const products = [{ id: 1, name: "test", price: 10000 }];
+  // const dispatch = useDispatch();
+  const [products, setProducts] = useState([]);
+  // const { products } = useSelector((state) => state.products);
   const handleAddToCart = (productId) => {};
   const handleLogout = () => {
-    dispatch(userLogout())
-      .then(() => router.push("/login"))
-      .catch((err) => console.error("Logout failed:", err));
+    // dispatch(userLogout())
+    //   .then(() => router.push("/login"))
+    //   .catch((err) => console.error("Logout failed:", err));
+  };
+
+  const fetchAllProducts = async () => {
+    const response = await axios.get("http://localhost:5130/api/v1/products");
+    console.log("RESPONSE", response.data);
+    if (response.data.data) {
+      setProducts(response.data.data);
+    }
   };
 
   useEffect(() => {
-    dispatch(fetchAllProducts());
+    fetchAllProducts();
   }, []);
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-6">
@@ -42,18 +51,13 @@ export default function ProductDashboardPage() {
             Semua Produk
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
+            {products?.map((product) => (
               <div
                 key={product.id}
                 className="bg-white rounded-2xl shadow hover:shadow-lg transition p-4"
               >
                 <div className="w-full h-40 relative mb-3">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover rounded-xl"
-                  />
+                  <img src={product.imageUrl} alt={product.name} />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">
                   {product.name}
