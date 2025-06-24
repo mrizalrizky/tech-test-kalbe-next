@@ -4,14 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
   // const { auth } = useSelector((state) => state.auth);
 
   const [form, setForm] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -22,13 +22,16 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("FORMM", form);
     const response = await axios.post(
       "http://localhost:5130/api/v1/auth/login",
       {
-        Email: form.email,
+        Username: form.username,
         Password: form.password,
       }
     );
+
+    console.log("ERSPONSE", response);
 
     if (response.data.data) {
       router.push("/");
@@ -44,12 +47,12 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Email
+              Username
             </label>
             <input
-              type="email"
-              name="email"
-              value={form.email}
+              type="text"
+              name="username"
+              value={form.username}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
