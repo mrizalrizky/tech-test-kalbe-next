@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import axios from "axios";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 export default function LoginPage() {
+  const router = useRouter();
   // const { auth } = useSelector((state) => state.auth);
 
   const [form, setForm] = useState({
@@ -16,15 +19,20 @@ export default function LoginPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simulate login (replace with actual login logic/API)
-    // const fakeUser = { name: "Kalbe User", email: form.email };
-    // login(fakeUser);
-    // console.log("Logged in as:", fakeUser);
+    const response = await axios.post(
+      "http://localhost:5130/api/v1/auth/login",
+      {
+        Email: form.email,
+        Password: form.password,
+      }
+    );
 
-    // Optionally, redirect to dashboard or home
+    if (response.data.data) {
+      router.push("/");
+    }
   };
 
   return (

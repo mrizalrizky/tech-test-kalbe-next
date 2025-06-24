@@ -13,7 +13,7 @@ export const fetchAllProductCategories = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await productCategoriesApi.getAllProductCategories();
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
