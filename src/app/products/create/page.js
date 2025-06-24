@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProductCategories } from "@/store/slice/productCategorySlice";
+import axios from "axios";
 
 export default function ProductCreatePage() {
   const dispatch = useDispatch();
@@ -11,6 +12,7 @@ export default function ProductCreatePage() {
 
   const router = useRouter();
 
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [product, setProduct] = useState({
     name: "",
     description: "",
@@ -32,7 +34,12 @@ export default function ProductCreatePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Submitting product:", product);
+    const response = await axios.post('http://localhost:5130/api/v1/products', {
+      ...product,
+      category: e.target[2].value, // Assuming the category is selected from the dropdown
+    });
+    )
+
   };
 
   if (loading)
@@ -79,9 +86,9 @@ export default function ProductCreatePage() {
             <label className="block text-sm font-medium text-gray-700">
               Kategori Produk
             </label>
-            <select className="border border-gray-300 w-full p-2 rounded-xl">
+            <select className="border border-gray-300 w-full p-2 rounded-xl" onChange={(e) => setSelectedCategory(e.target.value)} required>
               {categories?.map((category) => {
-                return <option value={category?.name}>{category?.name}</option>;
+                return <option value={category?.id}>{category?.name}</option>;
               })}
             </select>
           </div>
